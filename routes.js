@@ -8,19 +8,29 @@ export const router = new Router()
 const prisma = new PrismaClient()
 
 router.get('/tweets', async ctx => {
+  // await prisma.tweet.deleteMany()
     const [, token] = ctx.request.headers?.authorization?.split(' ') || []
 
     if(!token){
         ctx.status = 401
         return
     }
+
     try{
         jwt.verify(token, process.env.JWT_SECRET) 
-        const tweets = await prisma.tweet.findMany()
+        const tweets = await prisma.tweet.findMany({
+            include:{
+                user: true
+            }
+        })
         ctx.body = tweets
-
     }catch(error){
-        ctx.status = 401
+        // fazer uma mudança para tratar os erros
+        if(typeof error === 'JsonWebTokenError'){
+          ctx.status = 401
+          return
+        }
+        ctx.status = 500
         return
     }
 })
@@ -89,13 +99,9 @@ router.post('/signup', async ctx => {
 router.get('/login', async ctx => {
     const [, token] = ctx.request.headers.authorization.split(' ')
     const [email, plainTextPassword] = Buffer.from(token, 'base64').toString().split(':')
-    
-    
-    
+
     const saltRounds = 10
     const password = bcrypt.hashSync(plainTextPassword, saltRounds)
-
-    
 
     const user = await prisma.user.findUnique({
         where: {email}
