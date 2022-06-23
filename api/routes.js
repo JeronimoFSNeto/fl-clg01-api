@@ -74,7 +74,7 @@ router.post('/signup', async ctx => {
         })
 
         const accessToken = jwt.sign({
-            user: user.id
+            sub: user.id
         }, process.env.JWT_SECRET, {expiresIn: '24'})
     
         ctx.body = {
@@ -117,7 +117,7 @@ router.get('/login', async ctx => {
 
     if(passwordMath){
         const accessToken = jwt.sign({
-            user: user.id
+            sub: user.id
         }, process.env.JWT_SECRET, {expiresIn: '24'})
         ctx.body = {
             id: user.id,
