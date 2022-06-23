@@ -9,7 +9,7 @@
     "email": "jeronimo@solmaker.com"
   },
   "scripts": {
-    "dev": "api/node index.js"
+    "dev": "node api/index.js"
   },
   "dependencies": {
     "@koa/cors": "^3.3.0",
